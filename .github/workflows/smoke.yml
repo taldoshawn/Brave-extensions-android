@@ -1,0 +1,44 @@
+name: smoke
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate shell scripts
+        run: |
+          bash -n scripts/common.sh
+          bash -n scripts/bootstrap.sh
+          bash -n scripts/build_android.sh
+          bash -n scripts/prepare_only.sh
+          bash -n scripts/install_linux_deps.sh
+
+      - name: Validate Python
+        run: python3 -m py_compile scripts/verify_runtime_flags.py
+
+      - name: Validate extension manifest
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path("test-extension/manifest.json").read_text())
+          assert manifest["manifest_version"] == 3
+          assert manifest["action"]["default_popup"] == "popup.html"
+          print("manifest OK")
+          PY
+
+      - name: Package source ZIP
+        run: |
+          zip -r brave-mobile-extensions-source.zip . \
+            -x '.git/*' '*.pyc' '__pycache__/*' '.brave-work/*'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: brave-mobile-extensions-source
+          path: brave-mobile-extensions-source.zip
