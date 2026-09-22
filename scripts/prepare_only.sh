@@ -4,14 +4,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "${SCRIPT_DIR}/common.sh"
 
-if [[ ! -d "${BRAVE_DIR}/src" ]]; then
-  echo "Run ./scripts/bootstrap.sh first." >&2
+if [[ ! -f "${CHROMIUM_SRC}/BUILD.gn" ]]; then
+  echo "Run bash scripts/bootstrap.sh first." >&2
   exit 2
 fi
 
 cd "${BRAVE_DIR}"
 
-pnpm run build -- \
+pnpm run build \
   --target_os=android \
   --target_arch=arm64 \
   --target_android_output_format=apk \
