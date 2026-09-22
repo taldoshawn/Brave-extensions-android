@@ -15,11 +15,13 @@ git -C "${BRAVE_DIR}" checkout --detach "${BRAVE_REF}"
 
 cd "${BRAVE_DIR}"
 
-if command -v corepack >/dev/null 2>&1; then
-  corepack enable
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "pnpm is required. Install pnpm 11.11.0 before running bootstrap." >&2
+  exit 2
 fi
 
 echo "==> Brave pin: $(git rev-parse HEAD)"
+echo "==> pnpm: $(pnpm --version)"
 echo "==> Initializing Android/ARM64 checkout"
 
 pnpm run init -- \
@@ -28,4 +30,4 @@ pnpm run init -- \
 
 echo
 echo "Bootstrap complete."
-echo "Next: ./scripts/build_android.sh"
+echo "Next: bash scripts/build_android.sh"
