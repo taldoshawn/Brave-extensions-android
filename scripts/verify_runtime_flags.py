@@ -9,12 +9,15 @@ work_root = Path(os.environ.get(
     "BRAVE_MOBILE_EXT_WORK_ROOT",
     project_root / ".brave-work"
 ))
-brave_dir = work_root / "brave-core"
-src = brave_dir / "src"
+src = work_root / "src"
+brave_dir = src / "brave"
 
 upstream_flags = src / "extensions" / "buildflags" / "buildflags.gni"
 
 errors = []
+
+if not (brave_dir / "package.json").exists():
+    errors.append(f"Brave core is not at expected path: {brave_dir}")
 
 if upstream_flags.exists():
     text = upstream_flags.read_text(encoding="utf-8")
