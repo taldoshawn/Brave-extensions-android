@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Brave Mobile Extensions Smoke Test",
+  "version": "0.1.0",
+  "description": "Minimal MV3 extension used to verify the Brave Android extension runtime.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "action": {
+    "default_title": "Mobile extensions smoke test",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
