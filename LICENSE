@@ -1,0 +1,9 @@
+Mozilla Public License Version 2.0
+
+This repository is intended as an engineering overlay for Brave/Chromium.
+Brave source files remain under their respective upstream licenses. Any future
+patches derived from Brave source should preserve Brave's MPL-2.0 notices, and
+Chromium-derived code should preserve Chromium's BSD license notices.
+
+For the complete MPL 2.0 license text, see:
+https://www.mozilla.org/MPL/2.0/
