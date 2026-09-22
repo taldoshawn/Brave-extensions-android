@@ -1,8 +1,6 @@
 name: android-build
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -66,7 +64,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p artifacts
-          find .brave-work/brave-core/src/out -type f -name '*.apk' -print -exec cp -v {} artifacts/ \;
+          find .brave-work/src/out -type f -name '*.apk' -print -exec cp -v {} artifacts/ \;
 
       - name: Upload logs
         if: always()
