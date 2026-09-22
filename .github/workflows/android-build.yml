@@ -1,0 +1,85 @@
+name: android-build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: brave-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+
+    env:
+      BRAVE_MOBILE_EXT_WORK_ROOT: ${{ github.workspace }}/.brave-work
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free hosted-runner disk space
+        shell: bash
+        run: |
+          echo 'Before cleanup:'
+          df -h
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/share/boost || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          sudo rm -rf /usr/local/lib/android || true
+          sudo apt-get clean || true
+          docker system prune -af || true
+          echo 'After cleanup:'
+          df -h
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.16.0'
+
+      - name: Enable pnpm
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.11.0 --activate
+          node --version
+          pnpm --version
+
+      - name: Bootstrap Brave Android
+        shell: bash
+        run: bash scripts/bootstrap.sh
+
+      - name: Install Chromium Linux/Android build dependencies
+        shell: bash
+        run: bash scripts/install_linux_deps.sh
+
+      - name: Build ARM64 APK with extensions runtime
+        shell: bash
+        run: |
+          set -o pipefail
+          bash scripts/build_android.sh 2>&1 | tee android-build.log
+
+      - name: Collect APK
+        if: success()
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          find .brave-work/brave-core/src/out -type f -name '*.apk' -print -exec cp -v {} artifacts/ \;
+
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-build-log
+          path: android-build.log
+          if-no-files-found: ignore
+
+      - name: Upload APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brave-mobile-extensions-apk
+          path: artifacts/*.apk
+          if-no-files-found: error
