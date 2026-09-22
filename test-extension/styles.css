@@ -1,0 +1,20 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, sans-serif;
+}
+main {
+  width: 260px;
+  padding: 16px;
+}
+h1 {
+  font-size: 17px;
+  margin: 0 0 8px;
+}
+p {
+  font-size: 13px;
+}
+button {
+  width: 100%;
+  min-height: 40px;
+}
