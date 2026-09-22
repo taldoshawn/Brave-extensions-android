@@ -39,17 +39,17 @@ jobs:
         with:
           node-version: '24.16.0'
 
-      - name: Enable pnpm
+      - name: Install pnpm without Corepack
         shell: bash
         run: |
-          corepack enable
-          corepack prepare pnpm@11.11.0 --activate
+          corepack disable || true
+          npm install --global pnpm@11.11.0 --force
           node --version
           pnpm --version
 
       - name: Bootstrap Brave Android
         shell: bash
-        run: bash scripts/bootstrap.sh
+        run: bash scripts/bootstrap.sh 2>&1 | tee bootstrap.log
 
       - name: Install Chromium Linux/Android build dependencies
         shell: bash
@@ -68,12 +68,14 @@ jobs:
           mkdir -p artifacts
           find .brave-work/brave-core/src/out -type f -name '*.apk' -print -exec cp -v {} artifacts/ \;
 
-      - name: Upload build log
+      - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: android-build-log
-          path: android-build.log
+          name: android-build-logs
+          path: |
+            bootstrap.log
+            android-build.log
           if-no-files-found: ignore
 
       - name: Upload APK
