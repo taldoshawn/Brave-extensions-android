@@ -1,0 +1,8 @@
+.brave-work/
+brave-core/
+*.apk
+*.aab
+*.apks
+*.zip
+__pycache__/
+.DS_Store
