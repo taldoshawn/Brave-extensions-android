@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "${SCRIPT_DIR}/common.sh"
 
-mkdir -p "${WORK_ROOT}"
+mkdir -p "${CHROMIUM_SRC}"
 
 if [[ ! -d "${BRAVE_DIR}/.git" ]]; then
   git clone "${BRAVE_REPO}" "${BRAVE_DIR}"
@@ -22,9 +22,11 @@ fi
 
 echo "==> Brave pin: $(git rev-parse HEAD)"
 echo "==> pnpm: $(pnpm --version)"
+echo "==> Brave dir: ${BRAVE_DIR}"
+echo "==> Chromium src: ${CHROMIUM_SRC}"
 echo "==> Initializing Android/ARM64 checkout"
 
-pnpm run init -- \
+pnpm run init \
   --target_os=android \
   --target_arch=arm64
 
